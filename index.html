@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quarry Calculator</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  padding: 15px;
+  direction: rtl;
+  background: linear-gradient(to right, #0f172a, #1e293b);
+  color: white;
+}
+
+h2, h3 {
+  text-align: center;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 6px 0;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
+
+input, select {
+  background: #f1f5f9;
+  color: black;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.card {
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 15px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.result {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📊 حاسبة المحاجر</h2>
+
+<!-- التكشيف -->
+<div class="card">
+<h3>حساب التكشيف (طن)</h3>
+
+<input id="area" placeholder="المساحة (م²)">
+<input id="depth" placeholder="العمق (سم)">
+<input id="density" value="1.5">
+
+<button onclick="calcTonnage()">احسب</button>
+<p id="tonnage" class="result"></p>
+</div>
+
+<!-- المشون -->
+<div class="card">
+<h3>حساب المشون</h3>
+
+<input id="length" placeholder="الطول (م)">
+<input id="width" placeholder="العرض (م)">
+<input id="height" placeholder="الارتفاع (م)">
+<input id="pileDensity" value="1.6">
+
+<button onclick="calcPile()">احسب</button>
+<p id="pileResult" class="result"></p>
+</div>
+
+<!-- متر مكعب -->
+<div class="card">
+<h3>حساب بالمتر المكعب</h3>
+
+<input id="m3Area" placeholder="المساحة (م²)">
+<input id="m3Depth" placeholder="العمق (سم)">
+
+<button onclick="calcM3()">احسب</button>
+<p id="m3Result" class="result"></p>
+</div>
+
+<!-- 🔥 العروق والشوائب بعد التعديل -->
+<div class="card">
+<h3>حساب العروق والشوائب</h3>
+
+<input id="veinLength" placeholder="الطول (م)">
+<input id="veinThickness" placeholder="السمك (م)">
+<input id="veinDepth" placeholder="العمق / الارتفاع (م)">
+
+<select id="shapeFactor">
+  <option value="1">منتظم (1)</option>
+  <option value="0.7">شبه منتظم (0.7)</option>
+  <option value="0.5" selected>غير منتظم (0.5)</option>
+</select>
+
+<input id="veinDensity" value="2.2">
+
+<button onclick="calcVein()">احسب</button>
+
+<p id="veinResult" class="result"></p>
+</div>
+
+<!-- مسح -->
+<div class="card">
+<button onclick="clearAll()">🧹 مسح البيانات</button>
+</div>
+
+<div class="footer">
+تم التصميم بواسطة ❤️ Eng-Marco Demitry
+</div>
+
+<script>
+function calcTonnage() {
+let area = parseFloat(document.getElementById("area").value) || 0;
+let depth = parseFloat(document.getElementById("depth").value) || 0;
+let density = parseFloat(document.getElementById("density").value) || 0;
+
+let result = area * (depth / 100) * density;
+
+document.getElementById("tonnage").innerHTML =
+"الناتج: " + result.toFixed(2) + " طن";
+}
+
+function calcPile() {
+let l = parseFloat(document.getElementById("length").value) || 0;
+let w = parseFloat(document.getElementById("width").value) || 0;
+let h = parseFloat(document.getElementById("height").value) || 0;
+let d = parseFloat(document.getElementById("pileDensity").value) || 0;
+
+let volume = l * w * h * 0.5;
+let tons = volume * d;
+
+document.getElementById("pileResult").innerHTML =
+"الناتج: " + tons.toFixed(2) + " طن";
+}
+
+function calcM3() {
+let area = parseFloat(document.getElementById("m3Area").value) || 0;
+let depth = parseFloat(document.getElementById("m3Depth").value) || 0;
+
+let volume = area * (depth / 100);
+
+document.getElementById("m3Result").innerHTML =
+"الناتج: " + volume.toFixed(2) + " م³";
+}
+
+function calcVein() {
+let l = parseFloat(document.getElementById("veinLength").value) || 0;
+let t = parseFloat(document.getElementById("veinThickness").value) || 0;
+let depth = parseFloat(document.getElementById("veinDepth").value) || 0;
+let factor = parseFloat(document.getElementById("shapeFactor").value);
+let d = parseFloat(document.getElementById("veinDensity").value) || 0;
+
+let volume = l * t * depth * factor;
+let tons = volume * d;
+
+document.getElementById("veinResult").innerHTML =
+"الحجم: " + volume.toFixed(2) + " م³ | الوزن: " + tons.toFixed(2) + " طن";
+}
+
+function clearAll() {
+document.querySelectorAll("input").forEach(input => input.value = "");
+document.querySelectorAll(".result").forEach(p => p.innerHTML = "");
+}
+</script>
+
+</body>
+</html>
