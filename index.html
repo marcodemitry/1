@@ -3,20 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quarry Calculator</title>
+<title>Quarry Calculator Pro</title>
 
 <style>
 body {
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   padding: 15px;
   direction: rtl;
   background: linear-gradient(to right, #0f172a, #1e293b);
   color: white;
 }
 
-h2, h3 {
-  text-align: center;
-}
+h2, h3 { text-align: center; }
 
 input, select, button {
   width: 100%;
@@ -24,7 +22,6 @@ input, select, button {
   padding: 12px;
   border-radius: 10px;
   border: none;
-  font-size: 16px;
 }
 
 input, select {
@@ -36,11 +33,6 @@ button {
   background: #2563eb;
   color: white;
   font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #1d4ed8;
 }
 
 .card {
@@ -48,147 +40,146 @@ button:hover {
   margin-top: 15px;
   border-radius: 15px;
   background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .result {
   margin-top: 10px;
-  font-weight: bold;
   color: #38bdf8;
+  font-weight: bold;
 }
 
-.footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
-  opacity: 0.8;
+.summary {
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>📊 حاسبة المحاجر</h2>
+<h2>📊 حاسبة المحاجر PRO</h2>
 
 <!-- التكشيف -->
 <div class="card">
-<h3>حساب التكشيف (طن)</h3>
-
-<input id="area" placeholder="المساحة (م²)">
+<h3>التكشيف</h3>
+<input id="area" placeholder="المساحة">
 <input id="depth" placeholder="العمق (سم)">
-<input id="density" value="1.5">
-
+<input id="density" placeholder="الكثافة (افتراضي 1.5)">
 <button onclick="calcTonnage()">احسب</button>
 <p id="tonnage" class="result"></p>
 </div>
 
-<!-- المشون -->
+<!-- العروق -->
 <div class="card">
-<h3>حساب المشون</h3>
-
-<input id="length" placeholder="الطول (م)">
-<input id="width" placeholder="العرض (م)">
-<input id="height" placeholder="الارتفاع (م)">
-<input id="pileDensity" value="1.6">
-
-<button onclick="calcPile()">احسب</button>
-<p id="pileResult" class="result"></p>
-</div>
-
-<!-- متر مكعب -->
-<div class="card">
-<h3>حساب بالمتر المكعب</h3>
-
-<input id="m3Area" placeholder="المساحة (م²)">
-<input id="m3Depth" placeholder="العمق (سم)">
-
-<button onclick="calcM3()">احسب</button>
-<p id="m3Result" class="result"></p>
-</div>
-
-<!-- 🔥 العروق والشوائب بعد التعديل -->
-<div class="card">
-<h3>حساب العروق والشوائب</h3>
-
+<h3>العروق والشوائب</h3>
 <input id="veinLength" placeholder="الطول (م)">
 <input id="veinThickness" placeholder="السمك (م)">
-<input id="veinDepth" placeholder="العمق / الارتفاع (م)">
-
+<input id="veinDepth" placeholder="العمق (م)">
 <select id="shapeFactor">
-  <option value="1">منتظم (1)</option>
-  <option value="0.7">شبه منتظم (0.7)</option>
-  <option value="0.5" selected>غير منتظم (0.5)</option>
+<option value="1">منتظم</option>
+<option value="0.7">شبه منتظم</option>
+<option value="0.5" selected>غير منتظم</option>
 </select>
-
-<input id="veinDensity" value="2.2">
-
+<input id="veinDensity" placeholder="الكثافة (افتراضي 2.2)">
 <button onclick="calcVein()">احسب</button>
-
 <p id="veinResult" class="result"></p>
 </div>
 
-<!-- مسح -->
+<!-- التقرير -->
 <div class="card">
-<button onclick="clearAll()">🧹 مسح البيانات</button>
-</div>
+<h3>📅 تقرير اليوم</h3>
 
-<div class="footer">
-تم التصميم بواسطة ❤️ Eng-Marco Demitry
+<input id="dailyProduction" placeholder="الإنتاج (طن)">
+<input id="dailyWaste" placeholder="الشوائب (طن)">
+<input id="dailyPile" placeholder="المشون (طن)">
+<input id="contractPrice" placeholder="سعر الطن (افتراضي 42.5)">
+<input id="dailyNotes" placeholder="ملاحظات">
+
+<button onclick="saveReport()">💾 حفظ</button>
+<button onclick="showReports()">📊 عرض</button>
+<button onclick="downloadPDF()">📄 PDF</button>
+
+<div id="summary" class="summary"></div>
+<p id="reportOutput"></p>
 </div>
 
 <script>
-function calcTonnage() {
-let area = parseFloat(document.getElementById("area").value) || 0;
-let depth = parseFloat(document.getElementById("depth").value) || 0;
-let density = parseFloat(document.getElementById("density").value) || 0;
-
-let result = area * (depth / 100) * density;
-
-document.getElementById("tonnage").innerHTML =
-"الناتج: " + result.toFixed(2) + " طن";
+function calcTonnage(){
+let a=area.value||0,d=depth.value||0,den=density.value||1.5;
+let res=a*(d/100)*den;
+tonnage.innerHTML="الناتج: "+res.toFixed(2)+" طن";
 }
 
-function calcPile() {
-let l = parseFloat(document.getElementById("length").value) || 0;
-let w = parseFloat(document.getElementById("width").value) || 0;
-let h = parseFloat(document.getElementById("height").value) || 0;
-let d = parseFloat(document.getElementById("pileDensity").value) || 0;
-
-let volume = l * w * h * 0.5;
-let tons = volume * d;
-
-document.getElementById("pileResult").innerHTML =
-"الناتج: " + tons.toFixed(2) + " طن";
+function calcVein(){
+let l=veinLength.value||0,t=veinThickness.value||0,dep=veinDepth.value||0;
+let f=shapeFactor.value,d=veinDensity.value||2.2;
+let vol=l*t*dep*f,tons=vol*d;
+veinResult.innerHTML="الحجم: "+vol.toFixed(2)+" م³ | الوزن: "+tons.toFixed(2)+" طن";
 }
 
-function calcM3() {
-let area = parseFloat(document.getElementById("m3Area").value) || 0;
-let depth = parseFloat(document.getElementById("m3Depth").value) || 0;
+function saveReport(){
+let prod=+dailyProduction.value||0;
+let waste=+dailyWaste.value||0;
+let pile=+dailyPile.value||0;
+let price=+contractPrice.value||42.5;
+let notes=dailyNotes.value;
 
-let volume = area * (depth / 100);
+let net=prod-waste;
+let percent=prod?(waste/prod*100):0;
+let cost=prod*price;
 
-document.getElementById("m3Result").innerHTML =
-"الناتج: " + volume.toFixed(2) + " م³";
+let report={
+date:new Date().toLocaleDateString(),
+prod,waste,pile,net,
+percent:percent.toFixed(2),
+cost:cost.toFixed(2),
+notes
+};
+
+let arr=JSON.parse(localStorage.getItem("reports"))||[];
+arr.push(report);
+localStorage.setItem("reports",JSON.stringify(arr));
+
+alert("تم الحفظ");
 }
 
-function calcVein() {
-let l = parseFloat(document.getElementById("veinLength").value) || 0;
-let t = parseFloat(document.getElementById("veinThickness").value) || 0;
-let depth = parseFloat(document.getElementById("veinDepth").value) || 0;
-let factor = parseFloat(document.getElementById("shapeFactor").value);
-let d = parseFloat(document.getElementById("veinDensity").value) || 0;
+function showReports(){
+let arr=JSON.parse(localStorage.getItem("reports"))||[];
+let out="",totalP=0,totalW=0,totalC=0;
 
-let volume = l * t * depth * factor;
-let tons = volume * d;
+arr.forEach(r=>{
+totalP+=r.prod;
+totalW+=r.waste;
+totalC+=+r.cost;
 
-document.getElementById("veinResult").innerHTML =
-"الحجم: " + volume.toFixed(2) + " م³ | الوزن: " + tons.toFixed(2) + " طن";
+out+=`
+📅 ${r.date}<br>
+الإنتاج: ${r.prod} طن<br>
+الشوائب: ${r.waste} طن<br>
+الصافي: ${r.net} طن<br>
+النسبة: ${r.percent}%<br>
+التكلفة: ${r.cost} جنيه<br>
+<hr>`;
+});
+
+summary.innerHTML=`
+الإجمالي: ${totalP} طن<br>
+الشوائب: ${totalW} طن<br>
+التكلفة: ${totalC.toFixed(2)} جنيه
+`;
+
+reportOutput.innerHTML=out||"لا يوجد بيانات";
 }
 
-function clearAll() {
-document.querySelectorAll("input").forEach(input => input.value = "");
-document.querySelectorAll(".result").forEach(p => p.innerHTML = "");
+function downloadPDF(){
+let text=reportOutput.innerText;
+let blob=new Blob([text],{type:"text/plain"});
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="report.txt";
+a.click();
 }
 </script>
 
